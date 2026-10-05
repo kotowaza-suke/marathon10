@@ -35,10 +35,10 @@ app.use(express.json());
 
 app.post("/add-customer", async (req, res) => {
   try {
-    const { CompanyName, industry, contact, location } = req.body;
+    const { company_name, industry, contact, location } = req.body;
     const newCustomer = await pool.query(
       "INSERT INTO customers (company_name, industry, contact, location) VALUES ($1, $2, $3, $4) RETURNING *",
-      [companyName, industry, contact, location]
+      [company_name, industry, contact, location]
     );
     res.json({ success: true, customer: newCustomer.rows[0] });
   } catch (err) {
