@@ -30,6 +30,31 @@ app.get("/customers", async (req, res) => {
   }
 });
 
+
+
+app.get("/customers/:id", async (req, res) => {
+  try {
+    const customerId = req.params.id;
+
+    const customerData = await pool.query(
+      "SELECT * FROM customers WHERE customer_id = $1",
+      [customerId]
+    );
+
+    if (customerData.rows.length === 0) {
+      return res.status(404).json({ error: "顧客が見つかりません。" });
+    }
+
+    res.json(customerData.rows[0]);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "顧客情報の取得に失敗しました。" });
+  }
+});
+
+
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
