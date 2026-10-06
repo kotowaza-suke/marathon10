@@ -30,29 +30,24 @@
             <button type="submit" class="btn btn-primary">送信</button>
         </form>
     </div>
-    <script type="module">
-        import config from '../config.js';
-
+    <script>
         document.getElementById('customer-form').addEventListener('submit', function(e) {
             e.preventDefault();
+
             const formData = new FormData(this);
-            fetch(config.apiUrl + '/add-customer', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: new URLSearchParams([...formData])
-            }).then(response => response.json())
-              .then(data => {
-                if(data.success) {
-                    alert('顧客情報が正常に保存されました。');
-                    // フォームをリセット
-                    document.getElementById('customer-form').reset();
-                } else {
-                    alert('保存に失敗しました。');
-                }
-              })
-              .catch(error => console.error('Error:', error));
+
+            const customerData = {
+                company_name: formData.get('company_name'),
+                industry: formData.get('industry'),
+                contact: formData.get('contact'),
+                location: formData.get('location')
+            };
+
+            // 入力内容を一時保存
+            sessionStorage.setItem('customerData', JSON.stringify(customerData));
+
+            // 顧客登録確認画面へ移動
+            window.location.href = './add-confirm.html';
         });
     </script>
     <!-- BootstrapのJavaScriptの読み込み -->
