@@ -45,6 +45,10 @@
             </tr>
         </table>
 
+        <button id="delete-button" class="btn btn-danger">
+            削除
+        </button>
+
     </div>
 
     <script type="module">
@@ -81,6 +85,33 @@
                     customer.updated_date;
             })
             .catch(error => console.error(error));
+
+            document.getElementById('delete-button')
+                .addEventListener('click', function() {
+
+                     const result = confirm('削除していいですか？');
+
+                    if (!result) {
+                        return;
+                    }
+
+                    fetch(`${config.apiUrl}/customers/${customerId}`, {
+                        method: 'DELETE'
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+
+                        if (data.success) {
+                            alert('顧客情報を削除しました。');
+
+                            window.location.href = './list.html';
+                        } else {
+                            alert('削除に失敗しました。');
+                        }
+
+                    })
+                    .catch(error => console.error(error));
+                });
 
     </script>
 

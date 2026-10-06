@@ -54,6 +54,35 @@ app.get("/customers/:id", async (req, res) => {
 });
 
 
+app.delete("/customers/:id", async (req, res) => {
+  try {
+    const customerId = req.params.id;
+
+    const result = await pool.query(
+      "DELETE FROM customers WHERE customer_id = $1 RETURNING *",
+      [customerId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "顧客が見つかりません。"
+      });
+    }
+
+    res.json({
+      success: true
+    });
+
+  } catch (err) {
+    console.error(err);
+
+    res.status(500).json({
+      success: false
+    });
+  }
+});
+
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
