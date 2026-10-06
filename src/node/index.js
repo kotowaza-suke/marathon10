@@ -7,6 +7,10 @@ const port = 5018;
 const cors = require("cors");
 app.use(cors());
 
+// リクエストデータ読み取り
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
 const { Pool } = require("pg");
 const pool = new Pool({
   user: "user_95018", // PostgreSQLのユーザー名に置き換えてください
@@ -54,6 +58,45 @@ app.get("/customers/:id", async (req, res) => {
 });
 
 
+app.put("/customers/:id", async (req, res) => {
+  try {
+    const customerId = req.params.id;
+    const { company_name, industry, contact, location } = req.body;
+
+    const result = await pool.query(
+      `UPDATE customers
+       SET company_name = $1,
+           industry = $2,
+           contact = $3,
+           location = $4
+       WHERE customer_id = $5
+       RETURNING *`,
+      [company_name, industry, contact, location, customerId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "顧客が見つかりません。"
+      });
+    }
+
+    res.json({
+      success: true,
+      customer: result.rows[0]
+    });
+
+  } catch (err) {
+    console.error(err);
+
+    res.status(500).json({
+      success: false
+    });
+  }
+});
+
+
+
 app.delete("/customers/:id", async (req, res) => {
   try {
     const customerId = req.params.id;
@@ -84,8 +127,7 @@ app.delete("/customers/:id", async (req, res) => {
 });
 
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+
 
 app.post("/add-customer", async (req, res) => {
   try {

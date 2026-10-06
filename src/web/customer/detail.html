@@ -45,9 +45,18 @@
             </tr>
         </table>
 
+        <a id="update-button" class="btn btn-primary">
+            編集
+        </a>
+
         <button id="delete-button" class="btn btn-danger">
             削除
         </button>
+
+        <a href="./list.html" class="btn btn-secondary">
+            一覧へ戻る
+        </a>
+
 
     </div>
 
@@ -57,6 +66,12 @@
         // URLからcustomer_idを取得
         const params = new URLSearchParams(window.location.search);
         const customerId = params.get('id');
+
+        document.getElementById('update-button').href =
+             `./update.html?id=${customerId}`;
+
+
+
 
         // 指定された顧客情報を取得
         fetch(`${config.apiUrl}/customers/${customerId}`)
@@ -85,6 +100,7 @@
                     customer.updated_date;
             })
             .catch(error => console.error(error));
+
 
             document.getElementById('delete-button')
                 .addEventListener('click', function() {
