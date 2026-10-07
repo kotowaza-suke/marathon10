@@ -3,20 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>案件情報入力</title>
+    <title>顧客情報編集</title>
+
     <!-- Bootstrap CSSの読み込み -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
+
 <body>
-    <div class="container mt-5">
-        <!-- ここにHTMLを書く -->
-    </div>
-    <script type="module">
-        <!-- ここにJSを書く -->
-    </script>
-    <!-- BootstrapのJavaScriptの読み込み -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<div class="container mt-5">
+
+    <h2 class="mb-4">顧客情報編集</h2>
+
+    <form id="customer-form">
+
+        <div class="form-group">
+            <label for="company_name">会社名</label>
+            <input
+                type="text"
+                class="form-control"
+                id="company_name"
+                name="company_name"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="industry">業種</label>
+            <input
+                type="text"
+                class="form-control"
+                id="industry"
+                name="industry"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="contact">連絡先</label>
+            <input
+                type="text"
+                class="form-control"
+                id="contact"
+                name="contact"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="location">所在地</label>
+            <input
+                type="text"
+                class="form-control"
+                id="location"
+                name="location"
+                required
+            >
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            確認
+        </button>
+
+    </form>
+
+</div>
+
+<script type="module">
+
+    import config from '../config.js';
+
+    // URLから顧客IDを取得
+    const params = new URLSearchParams(window.location.search);
+    const customerId = params.get('id');
+
+    // 現在の顧客情報を取得
+    fetch(`${config.apiUrl}/customers/${customerId}`)
+        .then(response => response.json())
+        .then(customer => {
+
+            // 取得した情報をフォームに表示
+            document.getElementById('company_name').value =
+                customer.company_name;
+
+            document.getElementById('industry').value =
+                customer.industry;
+
+            document.getElementById('contact').value =
+                customer.contact;
+
+            document.getElementById('location').value =
+                customer.location;
+        })
+        .catch(error => console.error(error));
+
+    // 確認ボタンを押したとき
+    document.getElementById('customer-form')
+        .addEventListener('submit', function(e) {
+
+            e.preventDefault();
+
+            const updateData = {
+                customer_id: customerId,
+                company_name:
+                    document.getElementById('company_name').value,
+                industry:
+                    document.getElementById('industry').value,
+                contact:
+                    document.getElementById('contact').value,
+                location:
+                    document.getElementById('location').value
+            };
+
+            // 確認画面で使用するため一時保存
+            sessionStorage.setItem(
+                'updateCustomerData',
+                JSON.stringify(updateData)
+            );
+
+            // 更新確認画面へ移動
+            window.location.href =
+                `./update-confirm.html?id=${customerId}`;
+        });
+
+</script>
+
+<!-- BootstrapのJavaScriptの読み込み -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
 </body>
 </html>

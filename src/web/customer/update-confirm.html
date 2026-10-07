@@ -3,20 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>案件情報入力</title>
+    <title>顧客情報更新確認</title>
+
     <!-- Bootstrap CSSの読み込み -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
+
 <body>
-    <div class="container mt-5">
-        <!-- ここにHTMLを書く -->
-    </div>
-    <script type="module">
-        <!-- ここにJSを書く -->
-    </script>
-    <!-- BootstrapのJavaScriptの読み込み -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<div class="container mt-5">
+
+    <h2 class="mb-4">顧客情報の変更内容を確認してください</h2>
+
+    <table class="table table-bordered">
+        <tr>
+            <th>会社名</th>
+            <td id="company_name"></td>
+        </tr>
+
+        <tr>
+            <th>業種</th>
+            <td id="industry"></td>
+        </tr>
+
+        <tr>
+            <th>連絡先</th>
+            <td id="contact"></td>
+        </tr>
+
+        <tr>
+            <th>所在地</th>
+            <td id="location"></td>
+        </tr>
+    </table>
+
+    <button id="update-button" class="btn btn-primary">
+        更新
+    </button>
+
+    <button id="back-button" class="btn btn-secondary">
+        戻る
+    </button>
+
+</div>
+
+<script type="module">
+
+    import config from '../config.js';
+
+    // 編集画面で保存した顧客情報を取得
+    const updateData =
+        JSON.parse(sessionStorage.getItem('updateCustomerData'));
+
+    // 確認画面に変更内容を表示
+    document.getElementById('company_name').textContent =
+        updateData.company_name;
+
+    document.getElementById('industry').textContent =
+        updateData.industry;
+
+    document.getElementById('contact').textContent =
+        updateData.contact;
+
+    document.getElementById('location').textContent =
+        updateData.location;
+
+
+    // 戻るボタン
+    document.getElementById('back-button')
+        .addEventListener('click', function() {
+
+            window.location.href =
+                `./update.html?id=${updateData.customer_id}`;
+        });
+
+
+    // 更新ボタン
+    document.getElementById('update-button')
+        .addEventListener('click', function() {
+
+            fetch(`${config.apiUrl}/customers/${updateData.customer_id}`, {
+                method: 'PUT',
+
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+
+                body: JSON.stringify({
+                    company_name: updateData.company_name,
+                    industry: updateData.industry,
+                    contact: updateData.contact,
+                    location: updateData.location
+                })
+            })
+
+            .then(response => response.json())
+
+            .then(data => {
+
+                if (data.success) {
+
+                    alert('顧客情報を更新しました。');
+
+                    sessionStorage.removeItem('updateCustomerData');
+
+                    window.location.href =
+                        `./detail.html?id=${updateData.customer_id}`;
+
+                } else {
+
+                    alert('更新に失敗しました.');
+
+                }
+            })
+
+            .catch(error => console.error(error));
+        });
+
+</script>
+
+<!-- BootstrapのJavaScriptの読み込み -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
 </body>
 </html>
