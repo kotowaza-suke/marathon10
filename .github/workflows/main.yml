@@ -27,8 +27,8 @@ jobs:
 
       - name: Test Staging
         run: |
-          curl --fail --connect-timeout 10 --max-time 30 \
-          http://dev.marathon.rplearn.net/${{ secrets.DEV_SSH_USER }}/
+          ssh ${{ steps.ssh.outputs.SERVER }} \
+          'curl --fail --connect-timeout 10 --max-time 30 http://localhost/'
 
   production:
     needs: staging
